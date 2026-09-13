@@ -26,7 +26,7 @@ const learningSessionSchema = new mongoose.Schema({
     },
     maxRounds: {
         type: Number,
-        default: 3,
+        default: 5,
         min: 1,
         max: 5
     },
