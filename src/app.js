@@ -28,5 +28,14 @@ app.use("/api/users", userRoutes);
 app.use("/api/explanations", explanationRoutes);
 app.use("/api/sessions", sessionRoutes);
 
+app.use((error, req, res, next) => {
+    const statusCode = error.statusCode || 500;
+    return res.status(statusCode).json({
+        success: false,
+        message: error.message || "Internal server error",
+        errors: error.errors || []
+    });
+});
+
 
 export { app }

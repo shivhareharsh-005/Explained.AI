@@ -212,7 +212,39 @@ const sendSessionMessage = asyncHandler( async (req, res) => {
     );
 })
 
+const getSession = asyncHandler(async (req, res) => {
+    const session = await LearningSession.findById(req.params.sessionId)
+        .populate("explanation", "topic");
+
+    if (!session) {
+        throw new ApiError(404, "Session not found");
+    }
+
+    if (session.user.toString() !== req.user._id.toString()) {
+        throw new ApiError(403, "You cannot view this session");
+    }
+
+    return res.status(200).json(new ApiResponse(200, session, "Session fetched successfully"));
+})
+
+const getSessionMessages = asyncHandler(async (req, res) => {
+    const session = await LearningSession.findById(req.params.sessionId);
+
+    if (!session) {
+        throw new ApiError(404, "Session not found");
+    }
+
+    if (session.user.toString() !== req.user._id.toString()) {
+        throw new ApiError(403, "You cannot view these messages");
+    }
+
+    const messages = await SessionMessage.find({ session: session._id }).sort({ createdAt: 1 });
+    return res.status(200).json(new ApiResponse(200, messages, "Messages fetched successfully"));
+})
+
 export { 
     startSession,
-    sendSessionMessage
+    sendSessionMessage,
+    getSession,
+    getSessionMessages
 };
